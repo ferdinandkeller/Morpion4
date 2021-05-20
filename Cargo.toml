@@ -1,0 +1,8 @@
+[package]
+name = "morpion12"
+version = "0.1.0"
+authors = ["Ferdinand Keller <ferdinandklr@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+ethnum = { version = "1", features = ["llvm-intrinsics"] }
