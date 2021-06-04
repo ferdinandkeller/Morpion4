@@ -80,9 +80,10 @@ const fn moves_masks() -> [U256; 144] {
   v
 }
 
-const NO_MORE_MOVES: U256 = U256::from_words(
-  0b1111111111111111,
-  0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111);
+const NO_MORE_MOVES: U256 = clean_u256(
+  0b111111111111111111111111111111111111111111111111111111111111111111111111,
+  0b111111111111111111111111111111111111111111111111111111111111111111111111
+);
 
 // on définit la structure de la grille
 // on s'assure aussi que la struct puisse être hachée,
@@ -90,7 +91,7 @@ const NO_MORE_MOVES: U256 = U256::from_words(
 #[derive(Hash)]
 pub struct Board {
   pub players: u256,
-  pub mask: u256,
+  pub mask: u256
 }
 
 // on s'assure qu'elle puisse être copiée sur le stack directement
@@ -110,8 +111,7 @@ impl std::cmp::PartialEq for Board {
     self.players == other.players && self.mask == other.mask
   }
 }
-impl std::cmp::Eq for Board {
-}
+impl std::cmp::Eq for Board { }
 
 // on s'assure qu'elle puisse être affichée correctement
 impl std::fmt::Display for Board {
@@ -464,22 +464,22 @@ impl Board {
 
   // on obtient la liste des coups intéressants
   pub fn get_move_candidates(self) -> Vec<u32> {
-    let mut players = self.players;
+    let mut free_spaces = self.players;
     let mut moves: Vec<u32> = Vec::new();
   
-    if players == U256::ZERO {
-      players = U256::ONE << 77;
+    if free_spaces == U256::ZERO {
+      free_spaces = U256::ONE << 77;
     } else {
-      players = players 
-        | ((players&MASKS[0]) >>  1) | ((players&MASKS[9])  <<  1)
-        | (players            >> 12) | ((players&MASKS[10]) << 12)
-        | ((players&MASKS[6]) >> 11) | ((players&MASKS[12]) << 11)
-        | ((players&MASKS[3]) >> 13) | ((players&MASKS[11]) << 13);
-      players &= !self.players;
+      free_spaces = free_spaces 
+        | ((free_spaces&MASKS[0]) >>  1) | ((free_spaces&MASKS[9])  <<  1)
+        | (free_spaces            >> 12) | ((free_spaces&MASKS[10]) << 12)
+        | ((free_spaces&MASKS[6]) >> 11) | ((free_spaces&MASKS[12]) << 11)
+        | ((free_spaces&MASKS[3]) >> 13) | ((free_spaces&MASKS[11]) << 13);
+      free_spaces &= !self.players;
     }
   
     for i in 0..144 {
-      if (players & MOVES_MASKS[i]) != 0 {
+      if (free_spaces & MOVES_MASKS[i]) != 0 {
         moves.push(MOVES_ORDER[i]);
       }
     }

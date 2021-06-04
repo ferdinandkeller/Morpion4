@@ -9,7 +9,7 @@ use board::Board;
 use minimax::minimax;
 
 // on définit la profondeur de récursion
-const MAX_RECURSION_DEPTH: u8 = 7;
+const MAX_RECURSION_DEPTH: u8 = 4;
 
 // entrée du programme
 fn main() {
@@ -24,6 +24,7 @@ fn main() {
   // on créer le plateau et une liste de coups déjà joués
   let mut board = Board::new();
   let mut total_time_computing = Duration::new(0, 0);
+  let mut total_nbr_of_moves = 0;
 
   // on commence la partie
   let mut turn = starter;
@@ -43,6 +44,7 @@ fn main() {
       let (computer_move, _) = minimax(board, None, MAX_RECURSION_DEPTH, false, &mut HashMap::new());
       let elapsed = now.elapsed();
       total_time_computing += elapsed;
+      total_nbr_of_moves += 1;
       board = board.play(computer_move, false);
       println!("{}", board);
       println!("temps de calcul : {}s", (elapsed.as_millis() as f64)/1000.0);
@@ -66,6 +68,7 @@ fn main() {
     }
   }
   println!("temps total passé à calculer : {}s", (total_time_computing.as_millis() as f64)/1000.0);
+  println!("temps moyen par coup : {}s", (total_time_computing.as_millis() as f64)/1000.0/(total_nbr_of_moves as f64))
 }
 
 // on demande qui doit commencer
